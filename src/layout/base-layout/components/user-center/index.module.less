@@ -1,0 +1,30 @@
+.userCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @global-header-height;
+  height: @global-header-height;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    background: @dark-hover-bg-color;
+  }
+}
+
+.userCenterMenu {
+  .header {
+    padding: 4px 12px;
+    user-select: auto;
+    .name {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .email {
+      font-size: 12px;
+    }
+  }
+  .userCenterMenuItem {
+    padding: 8px 12px;
+    user-select: none;
+  }
+}

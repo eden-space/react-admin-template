@@ -1,0 +1,5 @@
+// 渲染进程。Only For fork-ts-checker-webpack-plugin
+{
+  "extends": "./tsconfig.json",
+  "include": ["src"] // 覆盖 tsconfig.json 中的配置以修复渲染进程代码主进程代码被同时编译的问题
+}
