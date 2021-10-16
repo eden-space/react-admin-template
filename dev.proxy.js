@@ -3,14 +3,14 @@
  */
 const proxyTable = {
   '/mock': {
-    target: 'http://localhost',
+    target: 'http://localhost:10086',
     changeOrigin: true,
     pathRewrite: {
       '^/mock': '/mock',
     },
   },
   '/api': {
-    target: 'http://localhost:10086',
+    target: 'http://localhost:1008611',
     changeOrigin: true,
     pathRewrite: {
       '^/api': '/api',

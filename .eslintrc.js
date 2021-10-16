@@ -124,7 +124,7 @@ module.exports = {
     'import/extensions': OFF,
     'import/no-unresolved': OFF,
     'import/no-dynamic-require': WARN,
-    'import/prefer-default-export': ERROR,
+    'import/prefer-default-export': WARN,
     'import/no-extraneous-dependencies': [
       ERROR,
       { devDependencies: true, optionalDependencies: false, peerDependencies: false },
