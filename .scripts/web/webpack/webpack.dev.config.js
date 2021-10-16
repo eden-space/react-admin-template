@@ -25,7 +25,9 @@ const webpackDevConfig = {
   },
   plugins: [
     // new webpack.HotModuleReplacementPlugin(),
-    new ReactRefreshWebpackPlugin(),
+    new ReactRefreshWebpackPlugin({
+      overlay: false,
+    }),
     canUseDll &&
       new webpack.DllReferencePlugin({
         context: __dirname,
