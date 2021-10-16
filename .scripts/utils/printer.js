@@ -8,9 +8,9 @@ const {
   version,
   gitBranch,
   gitCommitHash,
-  buildTarget,
   enginesRequired,
 } = require('../config');
+const buildTarget = process.env.BUILD_TARGET;
 
 function printName() {
   const cols = process.stdout.columns;

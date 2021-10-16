@@ -55,19 +55,6 @@ function nodeVersionCheck() {
   }
 }
 
-// BUILD_ENV
-function buildEnvCheck() {
-  if (!BUILD_ENV) {
-    console.log(
-      chalk.red(
-        ` 缺少必要构建参数${chalk.bold(chalk.yellowBright('BUILD_ENV'))}，请检查构建命令是否正确`,
-      ),
-    );
-    console.log();
-    process.exit(1);
-  }
-}
-
 // NODE_ENV
 function nodeEnvCheck() {
   if (!envs.includes(NODE_ENV)) {
@@ -112,7 +99,6 @@ module.exports = {
   spawn,
   execSync,
   nodeVersionCheck,
-  buildEnvCheck,
   nodeEnvCheck,
   webpackBuilder,
 };

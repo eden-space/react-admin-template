@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 dist
-build
 release
 debug.log
 
@@ -23,7 +22,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # lock files
-# yarn.lock
+yarn.lock
 package-lock.json
 
 # Editor directories and files

@@ -1,17 +1,14 @@
-const glob = require('glob');
 const { merge: webpackMerge } = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const PurgecssWebpackPlugin = require('purgecss-webpack-plugin');
 const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 
 const webpackBaseConfig = require('./webpack.base.config');
 const paths = require('../../config/paths');
-const { buildEnv, useSourceMap } = require('../../config');
-const isProduction = buildEnv === 'production';
+const { canUseSourceMap } = require('../../config');
+const isProduction = process.env.NODE_ENV === 'production';
 const isProductionProfile = isProduction && process.argv.includes('--profile');
-const canUseSourceMap = isProduction ? useSourceMap : true;
 
 const webpackProdConfig = {
   mode: 'production',
@@ -21,7 +18,7 @@ const webpackProdConfig = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: paths.appPublicAssetsPath,
+          from: paths.appWebPublicAssetsPath,
           to: paths.appWebDistPath,
           globOptions: {
             ignore: ['**/favicon.ico', '**/index.html'],
@@ -34,9 +31,6 @@ const webpackProdConfig = {
       ignoreOrder: true,
       filename: 'statics/styles/[name].[contenthash:8].css',
       chunkFilename: 'statics/styles/[name].[contenthash:8].chunk.css',
-    }),
-    new PurgecssWebpackPlugin({
-      paths: glob.sync(`${paths.appWebSrc}/**/*`,  { nodir: true }),
     }),
   ],
   optimization: {

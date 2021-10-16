@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const webpack = require('webpack');
 const WebpackBar = require('webpackbar');
 const threadLoader = require('thread-loader');
@@ -12,17 +10,11 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
-threadLoader.warmup({}, ['babel-loader', 'less-loader']);
+threadLoader.warmup({}, ['babel-loader']);
 
 const {
-  isUseSSR,
-  nodeEnv,
-  buildEnv,
-  buildTarget,
   bundleAnalyzer,
-  appPublicPath,
-
-  enableCache,
+  output,
 
   name,
   version,
@@ -31,18 +23,11 @@ const {
   buildTime,
 } = require('../../config');
 const paths = require('../../config/paths');
-const isDevelopment = buildEnv === 'development';
-const isProduction = buildEnv === 'production';
+const nodeEnv = process.env.NODE_ENV;
+const buildTarget = process.env.BUILD_TARGET;
 
-// antd theme
-let antdThemeVars = {};
-const antdThemeRcPath = path.resolve(paths.appRootPath, './.antdthemerc.js');
-if (fs.existsSync(antdThemeRcPath)) {
-  const antdThemeConfig = require(antdThemeRcPath);
-  if (antdThemeConfig.enable) {
-    antdThemeVars = antdThemeConfig.antdThemeVars;
-  }
-}
+const isDevelopment = nodeEnv === 'development';
+const isProduction = nodeEnv === 'production';
 
 function getCSSModuleLocalIdent(context, localIdentName, localName, options) {
   const resourcePath = context.resourcePath.replace(/\\/g, '/');
@@ -52,7 +37,6 @@ function getCSSModuleLocalIdent(context, localIdentName, localName, options) {
 function getStyleLoaders(useCssModule, isLessLoader) {
   const loaders = [
     isDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
-    // require.resolve('thread-loader'),
     {
       loader: require.resolve('css-loader'),
       options: Object.assign(
@@ -72,14 +56,19 @@ function getStyleLoaders(useCssModule, isLessLoader) {
       loader: require.resolve('postcss-loader'),
       options: {
         postcssOptions: {
+          ident: 'postcss',
+          config: false,
           plugins: [
             require.resolve('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
+            [
+              require.resolve('postcss-preset-env'),
+              {
+                autoprefixer: {
+                  flexbox: 'no-2009',
+                },
+                stage: 3,
               },
-              stage: 3,
-            }),
+            ],
             postcssNormalize(),
           ],
         },
@@ -89,12 +78,10 @@ function getStyleLoaders(useCssModule, isLessLoader) {
 
   if (isLessLoader) {
     loaders.push(
-      require.resolve('thread-loader'),
       {
         loader: require.resolve('less-loader'),
         options: {
           lessOptions: {
-            modifyVars: antdThemeVars,
             javascriptEnabled: true,
           },
         },
@@ -102,8 +89,8 @@ function getStyleLoaders(useCssModule, isLessLoader) {
       {
         loader: require.resolve('style-resources-loader'),
         options: {
-          patterns: [paths.globalLessVariables, paths.globalLessMixins],
-          injector: 'append',
+          injector: 'prepend',
+          patterns: [paths.globalLessVarsAndMixins],
         },
       },
     );
@@ -127,12 +114,12 @@ const webpackBaseConfig = {
   // web or electron-renderer 如果想运行于浏览器，target设为web，同时请注意渲染线程代码
   target: buildTarget === 'electron' ? 'electron-renderer' : 'web',
   entry: {
-    app: [paths.appWebEntry],
+    app: [paths.appWebEntryFile],
   },
   output: {
     globalObject: 'this',
     path: paths.appWebDistPath,
-    publicPath: appPublicPath,
+    publicPath: output.publicPath,
     pathinfo: !isProduction,
     filename: 'statics/scripts/[name]-[chunkhash:8].js',
     chunkFilename: 'statics/scripts/[name]-[chunkhash:8].chunk.js',
@@ -142,7 +129,7 @@ const webpackBaseConfig = {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        include: paths.appWebSrc,
+        include: paths.appWebEntryDir,
         use: [
           require.resolve('thread-loader'),
           {
@@ -192,7 +179,7 @@ const webpackBaseConfig = {
     symlinks: false,
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      '@': paths.appWebSrc,
+      '@': paths.appWebEntryDir,
     },
   },
   plugins: [
@@ -201,14 +188,11 @@ const webpackBaseConfig = {
       profile: true,
     }),
     new webpack.DefinePlugin({
-      'process.env.USE_SSR': JSON.stringify(isUseSSR),
-      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-      'process.env.BUILD_ENV': JSON.stringify(buildEnv),
       'process.env.APP_NAME': JSON.stringify(name),
       'process.env.APP_VERSION': JSON.stringify(version),
-      'process.env.GIT_BRANCH': JSON.stringify(gitBranch),
-      'process.env.GIT_COMMIT_HASH': JSON.stringify(gitCommitHash),
-      'process.env.APP_BUILD_TIME': JSON.stringify(buildTime),
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+
+      'process.env.BUILD_TARGET': JSON.stringify(buildTarget),
     }),
     bundleAnalyzer &&
       new BundleAnalyzerPlugin({
@@ -236,17 +220,19 @@ const webpackBaseConfig = {
       extensions: ['js', 'jsx', 'ts', 'tsx'],
       formatter: require.resolve('react-dev-utils/eslintFormatter'),
       eslintPath: require.resolve('eslint'),
-      context: paths.appWebSrc,
-      cache: enableCache,
+      context: paths.appWebEntryDir,
       cwd: paths.appRootPath,
       resolvePluginsRelativeTo: __dirname,
+      cache: process.env.NODE_ENV === 'development',
     }),
     new StylelintPlugin({
       fix: true,
-      cache: enableCache,
-      quiet: true,
-      context: paths.appWebSrc,
+      context: paths.appWebEntryDir,
       files: ['**/*.(le|c)ss'],
+      extensions: ['css', 'less'],
+      exclude: [paths.globalLessVarsAndMixins],
+      cache: process.env.NODE_ENV === 'development',
+      customSyntax: 'postcss'
     }),
     new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin(
@@ -254,13 +240,14 @@ const webpackBaseConfig = {
         {},
         {
           inject: true,
-          publicPath: appPublicPath,
-          template: paths.appHtml,
+          publicPath: output.publicPath,
+          template: paths.appWebHtmlTpl,
           meta: {
             name,
             version,
+            branch: gitBranch,
             hash: gitCommitHash,
-            time: buildTime,
+            build: buildTime,
           },
         },
         isProduction
