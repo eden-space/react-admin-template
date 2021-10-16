@@ -3,9 +3,9 @@ import { HashRouter, Switch } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 
-import Container from '@/layout/container';
+import BaseContainer from '@/base-layout/container';
+import BaseLayout from '@/base-layout/layout';
 import ErrorBoundary from '@/components/error-boundary';
-import BaseLayout from '@/layout/base-layout';
 import { getRedirectsRoutes, renderRoutes } from '@/utils/render-routes';
 import outsiders from '@/router/outsiders';
 import '@/styles/index.less';
@@ -22,13 +22,13 @@ const App: React.FC = () => {
         <MobxProvider>
           <ReduxProvider>
             <ErrorBoundary>
-              <Container>
+              <BaseContainer>
                 <Switch>
                   {getRedirectsRoutes(outsiders)}
                   {renderRoutes(outsiders)}
                   <BaseLayout />
                 </Switch>
-              </Container>
+              </BaseContainer>
             </ErrorBoundary>
           </ReduxProvider>
         </MobxProvider>

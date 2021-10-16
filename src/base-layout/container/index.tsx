@@ -10,7 +10,7 @@ interface IProps {
   children: React.ReactElement;
 }
 
-const Container: React.FC<IProps> = (props) => {
+const BaseContainer: React.FC<IProps> = (props) => {
   const history = useHistory();
   const location = useLocation();
 
@@ -59,4 +59,4 @@ const Container: React.FC<IProps> = (props) => {
   return props.children;
 };
 
-export default Container;
+export default BaseContainer;
