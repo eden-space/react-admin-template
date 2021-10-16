@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
-import { getParentsRouteByPath } from '@/utils/temporal';
-import useEnhancedEffect from '@/utils/use-enhanced-effect';
+import { getParentsRouteByPath } from '@/utils/functions';
 import routes from '@/router';
 import { IRouterConfig } from '@/utils/render-routes';
 import s from './index.module.less';
@@ -12,12 +11,12 @@ import s from './index.module.less';
 const GlobalBreadcrumb: React.FC = () => {
   const location = useLocation();
   const [breadcrumbs, setBreadcrumbs] = useState<IRouterConfig[]>([]);
-  useEnhancedEffect(() => {
+  useEffect(() => {
     const pathname = location.pathname.replace(/\/$/, '');
-    const list =
-      (getParentsRouteByPath(routes, pathname, 'children', 'path') as IRouterConfig[]) || [];
+    const list = getParentsRouteByPath(routes, pathname);
     setBreadcrumbs(list.reverse());
   }, [location.pathname]);
+
   return (
     <>
       {breadcrumbs.length ? (

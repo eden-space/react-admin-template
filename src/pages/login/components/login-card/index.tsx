@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Card, Form, Input, Checkbox, Button } from 'antd';
 import classnames from 'classnames';
 import JsCookie from 'js-cookie';
-import config from '@/config';
 
 import s from './index.module.less';
 import normal from './img/normal.png';
@@ -24,7 +23,7 @@ const LoginCard: React.FC<IProps> = (props: IProps) => {
 
   function onFinish(values: IFormData) {
     // 纯模拟一下
-    JsCookie.set(config.mainCookieName, JSON.stringify(values));
+    JsCookie.set('USER_NAME', JSON.stringify(values));
 
     props.onSuccess();
   }
@@ -69,6 +68,7 @@ const LoginCard: React.FC<IProps> = (props: IProps) => {
         <Form.Item label="密码" name="password" rules={[{ required: true, message: '请输入密码' }]}>
           <Input.Password
             size="large"
+            placeholder="请输入密码"
             onFocus={(): void => {
               setPanda('blindfold');
             }}

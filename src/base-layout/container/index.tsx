@@ -1,59 +1,35 @@
 /**
  * 处理一些全局逻辑
  */
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router';
-import useEnhancedEffect from '@/utils/use-enhanced-effect';
-import { flattedRoutes } from '@/router';
+import { flattenedRoutes } from '@/router';
 
 interface IProps {
   children: React.ReactElement;
 }
 
 const BaseContainer: React.FC<IProps> = (props) => {
+  const { current: originTitle } = useRef(document.title);
   const history = useHistory();
   const location = useLocation();
 
-  useEnhancedEffect(() => {
-    const { title } = document;
-    setTitle(location.pathname, title);
+  useEffect(() => {
+    setTitle(location.pathname);
 
-    const unListen = history.listen(({ pathname }) => {
-      setTitle(pathname, title);
+    const unregisterCallback = history.listen(({ pathname }) => {
+      setTitle(pathname);
     });
 
     return () => {
-      unListen();
-      document.title = title;
+      unregisterCallback();
+      document.title = originTitle;
     };
   }, []);
 
-  function setTitle(pathname: string, originTitle: string) {
-    getTitle(pathname)
-      .then((title) => {
-        if (typeof title === 'string') {
-          document.title = title;
-        }
-      })
-      .catch(() => {
-        document.title = originTitle;
-      });
-  }
-
-  function getTitle(pathname: string) {
-    return new Promise((resolve, reject) => {
-      const match = flattedRoutes.find((route) => {
-        const { path } = route;
-
-        return path.replace(/\/$/, '') === pathname.replace(/\/$/, '');
-      });
-
-      if (match && match.meta?.title) {
-        resolve(match.meta.title);
-      } else {
-        reject();
-      }
-    });
+  function setTitle(pathname: string) {
+    const match = flattenedRoutes.find((route) => route.path === pathname);
+    document.title = match?.meta?.title || originTitle;
   }
 
   return props.children;

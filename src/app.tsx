@@ -10,28 +10,20 @@ import { getRedirectsRoutes, renderRoutes } from '@/utils/render-routes';
 import outsiders from '@/router/outsiders';
 import '@/styles/index.less';
 
-import MobxProvider from './mobx';
-import ReduxProvider from './redux';
-
 const App: React.FC = () => {
   return (
     // <BrowserRouter>
     <HashRouter>
       <ConfigProvider locale={zhCN}>
-        {/* @warn @todo 删除。此处仅是模板示例，真实项目请选择其一。⚠CAUTION: One of MobxProvider and ReduxProvider */}
-        <MobxProvider>
-          <ReduxProvider>
-            <ErrorBoundary>
-              <BaseContainer>
-                <Switch>
-                  {getRedirectsRoutes(outsiders)}
-                  {renderRoutes(outsiders)}
-                  <BaseLayout />
-                </Switch>
-              </BaseContainer>
-            </ErrorBoundary>
-          </ReduxProvider>
-        </MobxProvider>
+        <ErrorBoundary>
+          <BaseContainer>
+            <Switch>
+              {getRedirectsRoutes(outsiders)}
+              {renderRoutes(outsiders)}
+              <BaseLayout />
+            </Switch>
+          </BaseContainer>
+        </ErrorBoundary>
       </ConfigProvider>
     </HashRouter>
     // </BrowserRouter>

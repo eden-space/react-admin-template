@@ -4,18 +4,13 @@ import appInfo from './utils/app-info';
 import reportWebVitals from './utils/report-web-vitals';
 
 function render(): void {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-  const App = require('./app').default;
-
-  // antd等一些第三方库会抛出一些警告，建议开启，防止自己写的代码有潜在问题
-  // ReactDom.render(
-  //  <React.StrictMode>
-  //    <App />
-  //  </React.StrictMode>,
-  //  document.getElementById('react-admin-template'),
-  // );
-
-  ReactDom.render(<App />, document.getElementById('react-admin-template'));
+  import('./app').then((res) => {
+    const App = res.default;
+    ReactDom.render(
+      <App />,
+      document.getElementById('react-admin-template'),
+    );
+  }).catch(console.error);
 }
 
 render();

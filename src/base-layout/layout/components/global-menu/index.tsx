@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import { useLocation, useHistory } from 'react-router';
-import { useSelector } from 'react-redux';
 
-import useEnhancedEffect from '@/utils/use-enhanced-effect';
-import { RootState } from '@/redux/store';
 import { IRouterConfig } from '@/utils/render-routes';
 import routes from '@/router';
-import { MenuInfo } from '@/interface/menu';
-import { checkPermissions } from '@/utils/functions';
-import { getParentsRouteByPath } from '@/utils/temporal';
+import { checkPermissions, getParentsRouteByPath } from '@/utils/functions';
 
 // import s from './index.module.less';
 export declare type MenuMode = 'horizontal' | 'vertical' | 'inline';
+
+export interface MenuInfo {
+  key: string;
+  keyPath: string[];
+}
 
 export interface IProps {
   mode?: MenuMode;
@@ -25,13 +25,11 @@ const GlobalMenu: React.FC<IProps> = (props: IProps) => {
   const location = useLocation();
   const history = useHistory();
   const [openKeys, setOpenKeys] = useState<React.Key[]>([]);
-  const permissions = useSelector((state: RootState) => state.global.permissions);
 
-  useEnhancedEffect(() => {
+  useEffect(() => {
     if (!props.collapsed) {
       const pathname = location.pathname.replace(/\/$/, '');
-      const parents =
-        (getParentsRouteByPath(routes, pathname, 'children', 'path') as IRouterConfig[]) || [];
+      const parents = getParentsRouteByPath(routes, pathname);
       setOpenKeys(parents.map((item) => item.path));
     }
   }, [location.pathname]);
@@ -58,7 +56,7 @@ const GlobalMenu: React.FC<IProps> = (props: IProps) => {
         }
 
         const authorities = route.meta?.authorities;
-        if (!checkPermissions(permissions, authorities, route.meta?.some)) {
+        if (!checkPermissions([], authorities, route.meta?.some)) {
           return null;
         }
 
@@ -81,16 +79,14 @@ const GlobalMenu: React.FC<IProps> = (props: IProps) => {
 
   return (
     <Menu
-      style={{ width: '100%' }}
+      mode="inline"
       theme="dark"
-      mode={props.mode || 'inline'}
-      inlineIndent={12}
       openKeys={openKeys as string[]}
       onOpenChange={(keys) => setOpenKeys(keys)}
       selectedKeys={[location.pathname]}
       onClick={onHandleMenuSelect}
     >
-      {renderMenuItem(routes.filter((item) => item && !item.meta?.hidden))}
+      {renderMenuItem(routes.filter((item) => !item?.meta?.hidden))}
     </Menu>
   );
 };
