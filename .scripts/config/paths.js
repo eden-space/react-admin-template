@@ -17,12 +17,12 @@ const resolveModule = (resolveFn, filePath) => {
 };
 
 const buildTarget = process.env.BUILD_TARGET;
+const distDir = resolvePath('dist');
 
 module.exports = {
   // global
+  appBuildPath: distDir,
   appRootPath: resolvePath('.'),
-  appDistPath: resolvePath('dist'),
-  appBuildPath: resolvePath('dist'),
   appRootPkgJson: resolvePath('package.json'),
   appJsConfig: resolvePath('jsconfig.json'),
   appTsConfig: resolvePath('tsconfig.json'),
@@ -32,24 +32,23 @@ module.exports = {
   // electron
   appElectronTsConfig: resolvePath('tsconfig.main.json'),
   appElectronConfigPath: resolvePath('electron.config.js'),
-  appElectronSrc: resolvePath('main'),
-  appElectronDevEntry: resolveModule(resolvePath, 'main/index.dev'),
-  appElectronEntry: resolveModule(resolvePath, 'main/index'),
+  appElectronEntryDir: resolvePath('main'),
+  appElectronDevEntryFile: resolveModule(resolvePath, 'main/index.dev'),
+  appElectronEntryFile: resolveModule(resolvePath, 'main/index'),
   appElectronPublicAssetsPath: resolvePath('public/main'),
-  appElectronDistPath: resolvePath('dist/main'),
-  appElectronDistPublicPath: resolvePath('dist/main/public'),
+  appElectronDistPath: resolvePath('main', distDir),
+  appElectronDistPublicPath: resolvePath('main/public', distDir),
   appElectronReleasePath: resolvePath('release'),
 
   // web
-  appWebTsConfig: resolvePath('tsconfig.render.json'),
-  appPublicAssetsPath: resolvePath('public/render'),
   favicon: resolvePath('public/render/favicon.ico'),
-  appHtml: resolvePath('public/render/index.html'),
   spriteSvgPath: resolvePath('src/assets/svg-sprite'),
-  appWebSrc: resolvePath('src'),
-  appWebEntry: resolveModule(resolvePath, 'src/index'),
-  appDllPath: resolvePath('node_modules/.cache/dll-plugin'),
-  appWebDistPath: buildTarget === 'electron' ? resolvePath('dist/render') : resolvePath('dist'),
-  globalLessVariables: resolvePath('src/styles/variables/*.less'),
-  globalLessMixins: resolvePath('src/styles/mixins/*.less'),
+  globalLessVarsAndMixins: resolvePath('src/styles/less-vars/*.less'),
+  appWebTsConfig: resolvePath('tsconfig.render.json'),
+  appWebEntryDir: resolvePath('src'),
+  appWebEntryFile: resolveModule(resolvePath, 'src/index'),
+  appWebPublicAssetsPath: resolvePath('public/render'),
+  appWebHtmlTpl: resolvePath('public/render/index.html'),
+  appWebDllPath: resolvePath('node_modules/.cache/dll-plugin'),
+  appWebDistPath: buildTarget === 'electron' ? resolvePath('render', distDir) : distDir,
 };

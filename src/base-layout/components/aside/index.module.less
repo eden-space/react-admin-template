@@ -1,0 +1,29 @@
+.aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  background: #fff;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+
+  .aside-menu {
+    flex: auto;
+    overflow-y: auto;
+    border: none;
+  }
+
+  .fold-icon {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.218s;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}

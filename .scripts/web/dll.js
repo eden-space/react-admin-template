@@ -14,13 +14,13 @@ const chalk = require('chalk');
 const { webpackBuilder } = require('../utils/functions');
 
 const webpackDllConfig = require('./webpack/webpack.dll.config');
-const { appRootPath, appDllPath, appRootPkgJson } = require('../config/paths');
+const { appRootPath, appWebDllPath, appRootPkgJson } = require('../config/paths');
 const { dependencies } = require(appRootPkgJson);
 
 function dllCheck() {
   console.log(chalk.grey(' 正在进行DLL有效性检查...'));
 
-  const dllDependenciesPath = path.resolve(appDllPath, 'dependencies.json');
+  const dllDependenciesPath = path.resolve(appWebDllPath, 'dependencies.json');
   const dllDependenciesPathExists = fs.existsSync(dllDependenciesPath);
 
   if (!dllDependenciesPathExists) return false;
@@ -44,7 +44,7 @@ webpackBuilder(webpackDllConfig)
   .then((res) => {
     console.log(res);
     console.log(chalk.grey(' 写入DLL依赖配置...'));
-    fs.writeFileSync(`${appDllPath}/dependencies.json`, JSON.stringify(dependencies, null, 2));
+    fs.writeFileSync(`${appWebDllPath}/dependencies.json`, JSON.stringify(dependencies, null, 2));
     console.log(chalk.grey(' DLL依赖配置写入成功！'));
     console.log();
     console.log(` ${chalk.bold(`${chalk.green('✔')}`)} ${chalk.cyan('DLL构建完成!')}`);

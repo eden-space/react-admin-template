@@ -7,26 +7,21 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const {
-  nodeEnv,
-  buildEnv,
   bundleAnalyzer,
-
   name,
   version,
-  gitBranch,
-  gitCommitHash,
   buildTime,
 } = require('../../config');
 const paths = require('../../config/paths');
 // const { dependencies, devDependencies } = require(paths.appRootPkgJson);
-const isDevelopment = buildEnv === 'development';
-const isProduction = buildEnv === 'production';
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'production';
 
 const webpackProdConfig = {
   mode: 'production',
   target: 'electron-main',
   entry: {
-    index: [paths.appElectronEntry],
+    index: [paths.appElectronEntryFile],
   },
   output: {
     globalObject: 'this',
@@ -41,7 +36,7 @@ const webpackProdConfig = {
     rules: [
       {
         test: /\.(js|ts)$/,
-        include: paths.appElectronSrc,
+        include: paths.appElectronEntryDir,
         use: [
           require.resolve('thread-loader'),
           {
@@ -61,7 +56,7 @@ const webpackProdConfig = {
   resolve: {
     extensions: ['.js', '.ts', '.json', '.node'],
     alias: {
-      '~': paths.appElectronSrc,
+      '~': paths.appElectronEntryDir,
     },
   },
   plugins: [
@@ -70,14 +65,9 @@ const webpackProdConfig = {
       profile: true,
     }),
     new webpack.DefinePlugin({
-      'process.env.ELECTRON_PACKED': JSON.stringify(process.env.ELECTRON_PACKED),
-      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-      'process.env.BUILD_ENV': JSON.stringify(buildEnv),
       'process.env.APP_NAME': JSON.stringify(name),
       'process.env.APP_VERSION': JSON.stringify(version),
-      'process.env.GIT_BRANCH': JSON.stringify(gitBranch),
-      'process.env.GIT_COMMIT_HASH': JSON.stringify(gitCommitHash),
-      'process.env.APP_BUILD_TIME': JSON.stringify(buildTime),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     bundleAnalyzer &&
       new BundleAnalyzerPlugin({
@@ -103,7 +93,7 @@ const webpackProdConfig = {
       extensions: ['js', 'jsx', 'ts', 'tsx'],
       formatter: require.resolve('react-dev-utils/eslintFormatter'),
       eslintPath: require.resolve('eslint'),
-      context: paths.appElectronSrc,
+      context: paths.appElectronEntryDir,
       cache: false,
       cwd: paths.appRootPath,
       resolvePluginsRelativeTo: __dirname,

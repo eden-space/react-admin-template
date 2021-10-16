@@ -9,13 +9,13 @@ import installExtension, {
   REDUX_DEVTOOLS,
   MOBX_DEVTOOLS,
 } from 'electron-devtools-installer';
-import { mark, performanceStart } from './utils/performance';
+import { mark, performanceStart, performanceEnd } from './utils/performance';
 
 performanceStart();
 
 mark('dev-start');
 
-electronDebug({ showDevTools: false });
+electronDebug({ showDevTools: true });
 
 (async function dev() {
   await app.whenReady();
@@ -40,4 +40,6 @@ electronDebug({ showDevTools: false });
   mark('dev-end');
 
   electronLog.info('Dev Ready');
-})();
+})().catch(console.error);
+
+performanceEnd();

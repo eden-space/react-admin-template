@@ -1,8 +1,18 @@
 import React from 'react';
-import { Card } from 'antd';
+import { useNavigate } from 'react-router';
+import { Card, Button } from 'antd';
+import s from './index.module.less';
 
 const Home: React.FC = () => {
-  return <Card>本分支代码为极简开发模板，除了优化不会提交过多的代码</Card>;
+  const navigate = useNavigate();
+
+  return (
+    <div className={s.home}>
+      <Card>
+        <Button type="primary" onClick={() => navigate('/dashboard')}>点击去工作台</Button>
+      </Card>
+    </div>
+  );
 };
 
 export default Home;

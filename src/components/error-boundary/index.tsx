@@ -3,7 +3,6 @@
  * 可根据项目场景做个体验降级或错误上报入口
  */
 import React, { Component } from 'react';
-import config from '@/config';
 import s from './index.module.less';
 
 interface IProps {
@@ -49,7 +48,7 @@ export default class ErrorBoundary extends Component<IProps, IState> {
     const { children } = this.props;
     const { error, errorInfo } = this.state;
 
-    if (config.isDevelopment && error && errorInfo) {
+    if (process.env.NODE_ENV && error && errorInfo) {
       return ErrorBoundary.onGetErrorInfo(error, errorInfo);
     }
 

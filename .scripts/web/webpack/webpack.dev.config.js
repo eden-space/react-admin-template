@@ -9,8 +9,8 @@ const { dllConfig } = require('../../config');
 const paths = require('../../config/paths');
 const webpackBaseConfig = require('./webpack.base.config');
 
-const dllScriptExists = fs.existsSync(path.resolve(paths.appDllPath, dllConfig.filename));
-const dllJsonExists = fs.existsSync(path.resolve(paths.appDllPath, dllConfig.manifest));
+const dllScriptExists = fs.existsSync(path.resolve(paths.appWebDllPath, dllConfig.filename));
+const dllJsonExists = fs.existsSync(path.resolve(paths.appWebDllPath, dllConfig.manifest));
 const canUseDll = dllScriptExists && dllJsonExists;
 
 const webpackDevConfig = {
@@ -18,22 +18,24 @@ const webpackDevConfig = {
   devtool: 'eval-cheap-module-source-map',
   output: {
     publicPath: '/',
-    filename: '[name]-[hash:8].js',
+    filename: '[name]-[fullhash:8].js',
   },
   resolve: {
     alias: {},
   },
   plugins: [
     // new webpack.HotModuleReplacementPlugin(),
-    new ReactRefreshWebpackPlugin(),
+    new ReactRefreshWebpackPlugin({
+      overlay: false,
+    }),
     canUseDll &&
       new webpack.DllReferencePlugin({
         context: __dirname,
-        manifest: require(path.resolve(paths.appDllPath, dllConfig.manifest)),
+        manifest: require(path.resolve(paths.appWebDllPath, dllConfig.manifest)),
       }),
     canUseDll &&
       new AddAssetHtmlWebpackPlugin({
-        filepath: require.resolve(path.resolve(paths.appDllPath, dllConfig.filename)),
+        filepath: require.resolve(path.resolve(paths.appWebDllPath, dllConfig.filename)),
       }),
   ].filter(Boolean),
   optimization: {

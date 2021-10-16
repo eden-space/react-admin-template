@@ -1,15 +1,12 @@
 const chalk = require('chalk');
 const { printName, printEnvironment } = require('./printer');
-const { nodeVersionCheck, buildEnvCheck, nodeEnvCheck } = require('./functions');
+const { nodeVersionCheck, nodeEnvCheck } = require('./functions');
 
 // logo
 printName();
 
 // Node Version
 nodeVersionCheck();
-
-// BUILD_ENV
-buildEnvCheck();
 
 // NODE_ENV
 nodeEnvCheck();

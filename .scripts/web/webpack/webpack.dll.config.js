@@ -4,7 +4,7 @@ const WebpackBar = require('webpackbar');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const { dllConfig } = require('../../config');
-const { appDllPath, appRootPkgJson } = require('../../config/paths');
+const { appWebDllPath, appRootPkgJson } = require('../../config/paths');
 const { dependencies } = require(appRootPkgJson);
 
 // 不被DllPlugin支持的包
@@ -25,7 +25,7 @@ module.exports = {
     ),
   },
   output: {
-    path: appDllPath,
+    path: appWebDllPath,
     filename: dllConfig.filename,
     library: dllConfig.library,
   },
@@ -36,7 +36,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new webpack.DllPlugin({
       context: __dirname,
-      path: path.join(appDllPath, dllConfig.manifest),
+      path: path.join(appWebDllPath, dllConfig.manifest),
       name: dllConfig.library,
     }),
   ],

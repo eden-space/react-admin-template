@@ -1,15 +1,6 @@
-/**
- * 启动 Electron 开发环境
- * 如果不需要 Electron 又不想其留在项目中，在 `README.md` 中查看如何操作
- * 为了与生产行为一致（参考build.js注释）此处用 BUILD_ENV 接管 NODE_ENV 并对其重新赋值
- */
-if (!process.env.BUILD_ENV && process.env.NODE_ENV) {
-  process.env.BUILD_ENV = process.env.NODE_ENV;
-}
-
 process.env.BABEL_ENV = 'development';
 process.env.NODE_ENV = 'development';
-// process.env.BUILD_TARGET = 'electron'; // 见package.json
+process.env.BUILD_TARGET = 'electron';
 
 process.on('unhandledRejection', (error) => {
   throw error;
@@ -31,6 +22,7 @@ const paths = require('../config/paths');
 const webpackMainProdConfig = require('./webpack/webpack.prod.config');
 const webpackDevConfig = require('../web/webpack/webpack.dev.config');
 const { printStatsLog, printElectronLog, printInstructions } = require('../utils/printer');
+const { devServer } = config;
 
 let electronProcess = null;
 let isElectronManualRestarting = false;
@@ -42,16 +34,16 @@ function startRenderServer() {
 
     portFinder
       .getPortPromise({
-        port: config.port,
+        port: devServer.port,
       })
       .then((port) => {
-        config.port = port;
+        devServer.port = port;
 
         const server = new WebpackDevServer({
           port,
-          host: config.hostName,
+          host: devServer.host,
           // hot: true, // 默认即为true，启用webpack.HotModuleReplacementPlugin()
-          proxy: config.proxy,
+          proxy: devServer.proxy,
           historyApiFallback: true,
           client: {
             overlay: {
@@ -91,9 +83,8 @@ function startElectron() {
   return new Promise((resolve) => {
     electronProcess = spawn(electron, ['--inspect=5858', paths.appElectronDistPath], {
       env: Object.assign({}, process.env, {
-        ELECTRON_DISABLE_SECURITY_WARNINGS: false, // electron的一些警告信息按需配置
-        RENDER_DEV_HOST_NAME: config.hostName === '0.0.0.0' ? 'localhost' : config.hostName,
-        RENDER_DEV_PORT: config.port,
+        RENDER_DEV_HOST_NAME: devServer.host === '0.0.0.0' ? 'localhost' : config.devServer.host,
+        RENDER_DEV_PORT: devServer.port,
       }),
     });
 
@@ -117,7 +108,7 @@ function startElectron() {
 
 function startMainWatcher() {
   return new Promise((resolve, reject) => {
-    webpackMainProdConfig.entry.index.unshift(paths.appElectronDevEntry);
+    webpackMainProdConfig.entry.index.unshift(paths.appElectronDevEntryFile);
 
     let firstTapDone = false;
     const compiler = webpack(webpackMainProdConfig);

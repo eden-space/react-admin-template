@@ -1,0 +1,115 @@
+:root {
+  --primary-color: #1890ff;
+  --primary-color-active: #f90;
+}
+
+
+
+.home {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .player,
+  .uploader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .player {
+    z-index: 1;
+  }
+
+  .uploader {
+    z-index: 2;
+
+    .drag {
+      background: transparent;
+    }
+
+    .uploader-icon {
+      font-size: 66px;
+      color: var(--primary-color);
+    }
+
+    .uploader-text {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: rgb(0 0 0 / 85%);
+    }
+
+    .uploader-hint {
+      font-size: 14px;
+      color: rgb(0 0 0 / 45%);
+    }
+  }
+
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    color: #fff;
+    background: rgb(0 0 0 / 40%);
+    transition: all 0.218s ease-in-out 0.3s;
+    transform: translateY(100%);
+
+    .icon {
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.218s;
+
+      &.active {
+        color: var(--primary-color-active);
+      }
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+
+      .left {
+        display: flex;
+        align-items: center;
+
+        .action {
+          margin-right: 16px;
+          font-size: 20px;
+        }
+      }
+
+      .right {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+
+        .direction {
+          font-size: 24px;
+          cursor: pointer;
+        }
+
+        .history {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+body {
+  &:hover {
+    .footer {
+      transform: translateY(0);
+    }
+  }
+}

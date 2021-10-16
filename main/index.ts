@@ -1,13 +1,15 @@
 import path from 'path';
 import url from 'url';
 import electronLog from 'electron-log';
-import { app, BrowserWindow } from 'electron';
-import config from './config';
-import { mark, performanceEnd } from './utils/performance';
+import { app, BrowserWindow, globalShortcut } from 'electron';
+import { mark, performanceStart, performanceEnd } from './utils/performance';
+import { APP_NAME, APP_VERSION } from './config';
+import { banShortcut } from './utils/functions';
+import './config/menu';
 
-const { buildEnv, name, version, packed } = config;
-const isDevelopment = process.env.BUILD_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === 'development';
 
+performanceStart();
 mark('main-start');
 
 process.on('unhandledRejection', (error) => {
@@ -26,40 +28,46 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    minWidth: 1366,
-    minHeight: 768,
+    minWidth: 830,
+    minHeight: 560,
+    width: 830,
+    height: 560,
     frame: true,
-    show: false,
+    show: true,
     transparent: false,
-    backgroundColor: '#1f1f1f',
+    backgroundColor: '#333',
     webPreferences: {
-      webSecurity: true,
+      webviewTag: true,
+      webSecurity: false,
       nodeIntegration: true, // 加载第三方网页强烈建议置为false。
-      contextIsolation: buildEnv !== 'development', // 自Electron 12将默认为true。
+      contextIsolation: !isDevelopment, // 自Electron 12将默认为true。
       preload: path.resolve(
         __dirname,
-        packed ? 'public/statics/preload.js' : '../public/main/statics/preload.js',
+        isDevelopment ? '../public/main/statics/preload.js' : 'public/statics/preload.js',
       ),
     },
   });
 
   const originUa = mainWindow.webContents.getUserAgent();
-  mainWindow.webContents.setUserAgent(`${originUa} ${name}/${version}`);
+  mainWindow.webContents.setUserAgent(`${originUa} ${APP_NAME}/${APP_VERSION}`);
 
   mark('main-window-source-load-start');
 
   const { RENDER_DEV_HOST_NAME, RENDER_DEV_PORT } = process.env;
   // 此处不做容错判断，无意义。如果不改启动方式不会出错，如果改了启动方式则默认知道如何关联
-  const pathname = `${RENDER_DEV_HOST_NAME as string}:${RENDER_DEV_PORT as string}`;
+  const origin = `${RENDER_DEV_HOST_NAME as string}:${RENDER_DEV_PORT as string}`;
 
   const options = {
     protocol: isDevelopment ? 'http' : 'file',
-    pathname: isDevelopment ? pathname : path.join(__dirname, '../render/index.html'),
+    pathname: isDevelopment ? origin : path.join(__dirname, '../render/index.html'),
     slashes: true,
   };
 
   mainWindow.loadURL(url.format(options)).then(() => {
-    electronLog.info(`Main Window Load Success: http://${pathname}`);
+    electronLog.info(`Main Window Load Success: http://${origin}`);
+    electronLog.info(process.env.APP_NAME);
+  }).catch((err) => {
+    console.error(err);
   });
 
   mainWindow.on('ready-to-show', () => {
@@ -90,16 +98,33 @@ function createWindow() {
     mainWindow = null;
   });
 
+  // ipcMain.handle('prefers-color-scheme:toggle', () => {
+  //   if (nativeTheme.shouldUseDarkColors) {
+  //     nativeTheme.themeSource = 'light';
+  //   } else {
+  //     nativeTheme.themeSource = 'dark';
+  //   }
+  //   return nativeTheme.shouldUseDarkColors;
+  // });
+  //
+  // ipcMain.handle('prefers-color-scheme:system', () => {
+  //   nativeTheme.themeSource = 'system';
+  // });
+
   setTimeout(() => {
     // mainWindow.webContents.reloadIgnoringCache();
   }, 5000);
 
   if (process.env.BUILD_ENV === 'development') {
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
 }
 
 app.whenReady().then(() => {
+  if (!isDevelopment) {
+    banShortcut();
+  }
+
   createWindow();
 
   app.on('activate', () => {
@@ -109,6 +134,8 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+}).catch((err) => {
+  console.error(err);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -118,6 +145,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('will-quit', () => {
+  // 注销所有快捷键
+  globalShortcut.unregisterAll();
 });
 
 // In this file you can include the rest of your app's specific main process

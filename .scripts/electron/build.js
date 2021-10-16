@@ -8,7 +8,7 @@ if (!process.env.BUILD_ENV && process.env.NODE_ENV) {
 
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';
-// process.env.BUILD_TARGET = 'electron'; // 见package.json
+process.env.BUILD_TARGET = 'electron';
 
 process.on('unhandledRejection', (error) => {
   throw error;
@@ -26,6 +26,7 @@ const { webpackBuilder } = require('../utils/functions');
 
 if (process.env.PACKAGE_ONLY === '1') {
   // electron打包
+  console.log(chalk.redBright('  • 注意: 此命令只运行electron-builder打包'));
   require('./packager');
   return;
 }
