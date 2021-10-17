@@ -4,17 +4,12 @@ import load from '@/utils/load';
 import { IRouterConfig } from '@/utils/render-routes';
 
 /**
- * 无公共功能组件路由列表
- * @description 此部分路由理论上不需要鉴权，如果需要请自行添加，渲染入口再`src/app.tsx`
+ * 不包含BaseLayout功能组件路由列表
+ * @description 仅包含自己页面内数据。理论上系统级诸如登陆、无访问权限等业务无关路由放在此处
  */
 const outsiders: IRouterConfig[] = [
   {
-    path: '/login',
-    component: load(() => import('@/pages/login')),
-    meta: { title: '用户登录', icon: <LoginOutlined /> },
-  },
-  {
-    path: '/permission-denied',
+    path: '/403',
     component: load(() => import('@/pages/errors/403')),
     meta: { title: '无系统访问权限', icon: <LoginOutlined /> },
   },

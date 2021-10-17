@@ -1,10 +1,16 @@
 .breadcrumb {
   padding: 10px;
 
-  .link:hover {
-    color: #0085fa;
-  }
-  .home {
+  .mr4 {
     margin-right: 4px;
+  }
+
+  .link {
+    &.disabled {
+      pointer-events: none;
+    }
+    &:hover {
+      color: #1890ff;
+    }
   }
 }

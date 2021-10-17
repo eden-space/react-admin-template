@@ -1,1 +1,27 @@
-//.gitkeep
+.appContainer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .appHeader {
+    color: #fff;
+  }
+
+  .appAsider {
+    position: relative;
+    background: #fff;
+  }
+
+  .appContent {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+
+    .routerView {
+      flex: auto;
+      padding: 0 10px;
+      overflow: auto;
+    }
+  }
+}
+

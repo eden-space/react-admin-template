@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Breadcrumb } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
+import classnames from 'classnames';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { getParentsRouteByPath } from '@/utils/functions';
@@ -11,10 +12,10 @@ import s from './index.module.less';
 const GlobalBreadcrumb: React.FC = () => {
   const location = useLocation();
   const [breadcrumbs, setBreadcrumbs] = useState<IRouterConfig[]>([]);
+
   useEffect(() => {
-    const pathname = location.pathname.replace(/\/$/, '');
-    const list = getParentsRouteByPath(routes, pathname);
-    setBreadcrumbs(list.reverse());
+    const list = getParentsRouteByPath(routes, location.pathname);
+    setBreadcrumbs(list.filter(({ path }) => path !== '/').reverse());
   }, [location.pathname]);
 
   return (
@@ -23,21 +24,23 @@ const GlobalBreadcrumb: React.FC = () => {
         <section className={s.breadcrumb}>
           <Breadcrumb>
             <Breadcrumb.Item>
-              {breadcrumbs.length ? (
+              {location.pathname !== '/' && (
                 <Link className={s.link} to="/">
-                  <HomeOutlined className={s.home} />
+                  <HomeOutlined className={s.mr4} />
                   首页
                 </Link>
-              ) : (
-                <>
-                  <HomeOutlined className={s.home} />
-                  首页
-                </>
               )}
             </Breadcrumb.Item>
-            {breadcrumbs.map(({ path, meta }) => (
-              <Breadcrumb.Item key={path}>{meta?.title}</Breadcrumb.Item>
-            ))}
+            {breadcrumbs.map(({ path, meta }, index) => {
+              return (
+                <Breadcrumb.Item key={path}>
+                  <Link className={classnames(s.link, { [s.disabled]: breadcrumbs.length - 1 === index })} to={path}>
+                    {meta?.icon && <span className={s.mr4}>{meta.icon}</span>}
+                    {meta?.title}
+                  </Link>
+                </Breadcrumb.Item>
+              );
+            })}
           </Breadcrumb>
         </section>
       ) : null}

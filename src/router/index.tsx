@@ -1,6 +1,5 @@
 /**
- * 含公共功能组件路由列表
- *
+ * 包含BaseLayout功能组件路由列表
  * key                {String}        key
  * path               {String}        路由地址
  * exact              {Boolean}       精确匹配，如果存在子路由，父级路由必须为true。默认: false
@@ -21,7 +20,7 @@
  */
 import React from 'react';
 import {
-  DesktopOutlined,
+  HomeOutlined,
   DashboardOutlined,
   VerifiedOutlined,
   FieldNumberOutlined,
@@ -30,15 +29,14 @@ import {
 } from '@ant-design/icons';
 
 import load from '@/utils/load';
-import { IRouterConfig } from '@/utils/render-routes';
-import { flatRouterList } from '@/utils/functions';
+import { getFlattenedRoutes, IRouterConfig } from '@/utils/render-routes';
 
 const routes: IRouterConfig[] = [
   {
     path: '/',
     exact: true,
     component: load(() => import('@/pages/home')),
-    meta: { title: '首页', icon: <DesktopOutlined />, hidden: true },
+    meta: { title: '首页', icon: <HomeOutlined />, hidden: true },
   },
   {
     path: '/dashboard',
@@ -85,6 +83,6 @@ const routes: IRouterConfig[] = [
   },
 ];
 
-export const flattenedRoutes = flatRouterList(routes);
+export const flattenedRoutes = getFlattenedRoutes(routes);
 
 export default routes;

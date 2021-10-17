@@ -52,7 +52,6 @@ class Request {
     this.client.interceptors.request.use(
       (config: IAxiosRequestConfig) => {
         if (!config?.background) {
-          console.log('@todo 打开菊花图动作');
           loading.render();
         }
         return config;
@@ -68,7 +67,6 @@ class Request {
       (response) => {
         const config = response.config as IAxiosRequestConfig;
         if (!config?.background) {
-          console.log('@todo 隐藏菊花图动作');
           loading.close();
         }
         if (this.dataHandler) {

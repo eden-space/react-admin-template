@@ -21,15 +21,14 @@ export interface IProps {
 
 const { Item: MenuItem, SubMenu } = Menu;
 
-const GlobalMenu: React.FC<IProps> = (props: IProps) => {
+const SiderMenu: React.FC<IProps> = (props: IProps) => {
   const location = useLocation();
   const history = useHistory();
   const [openKeys, setOpenKeys] = useState<React.Key[]>([]);
 
   useEffect(() => {
     if (!props.collapsed) {
-      const pathname = location.pathname.replace(/\/$/, '');
-      const parents = getParentsRouteByPath(routes, pathname);
+      const parents = getParentsRouteByPath(routes, location.pathname);
       setOpenKeys(parents.map((item) => item.path));
     }
   }, [location.pathname]);
@@ -80,7 +79,6 @@ const GlobalMenu: React.FC<IProps> = (props: IProps) => {
   return (
     <Menu
       mode="inline"
-      theme="dark"
       openKeys={openKeys as string[]}
       onOpenChange={(keys) => setOpenKeys(keys)}
       selectedKeys={[location.pathname]}
@@ -91,4 +89,4 @@ const GlobalMenu: React.FC<IProps> = (props: IProps) => {
   );
 };
 
-export default GlobalMenu;
+export default SiderMenu;

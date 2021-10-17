@@ -1,25 +1,5 @@
 import { IRouterConfig } from '@/utils/render-routes';
 
-export function flatRouterList(list: IRouterConfig[]) {
-  const res: IRouterConfig[] = [];
-
-  function travel(arr: IRouterConfig[]) {
-    for (let i = 0; i < arr.length; i++) {
-      const route = arr[i];
-      const { children } = arr[i];
-
-      res.push(route);
-
-      if (children) {
-        travel(children);
-      }
-    }
-  }
-  travel(list);
-
-  return res;
-}
-
 export function checkPermissions(permissions?: string[], authorities?: string[], some?: boolean) {
   if (!permissions || !authorities) {
     return true;
@@ -36,17 +16,17 @@ export function checkPermissions(permissions?: string[], authorities?: string[],
     : authorities?.every((value) => permissions?.includes(value));
 }
 
-export function getParentsRouteByPath(treeList: IRouterConfig[], value: any): IRouterConfig[] {
+export function getParentsRouteByPath(treeList: IRouterConfig[], path: string): IRouterConfig[] {
   if (!Array.isArray(treeList)) {
     return [];
   }
 
   for (let i = 0; i < treeList.length; i++) {
-    if (treeList?.[i]?.path === value) {
+    if (treeList?.[i]?.path === path) {
       return [treeList[i]];
     }
     if (treeList?.[i]?.children) {
-      const nodes = getParentsRouteByPath(treeList?.[i]?.children || [], value) || [];
+      const nodes = getParentsRouteByPath(treeList?.[i]?.children || [], path) || [];
       return nodes.concat(treeList[i]);
     }
   }

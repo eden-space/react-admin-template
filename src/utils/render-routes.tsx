@@ -1,5 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router';
+import { LoadableComponent } from '@loadable/component';
+
 import { checkPermissions } from '@/utils/functions';
 
 export interface IRouteMetaConfig {
@@ -19,8 +21,8 @@ export interface IRouterConfig {
   strict?: boolean; // 严格匹配
   sensitive?: boolean; // 是否区分大小写匹配
   redirect?: string; // 重定向路由地址
-  render?: (props: any) => React.Component;
-  component?: React.ComponentType<any> | null;
+  render?: (props: any) => React.ReactElement;
+  component?: LoadableComponent<any> | React.ComponentType<any> | null;
   meta?: IRouteMetaConfig; // 元数据
   children?: IRouterConfig[]; // 子路由
 }
@@ -65,6 +67,8 @@ function generatorRoute(
           return route.render({ ...props, ...extraProps, route });
         }
         if (route.component) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           return <route.component {...props} {...extraProps} route={route} />;
         }
         return null;
@@ -73,19 +77,7 @@ function generatorRoute(
   );
 }
 
-function renderRoutes(
-  routes: IRouterConfig[],
-  extraProps?: IExtraProps,
-): React.ReactElement[] | null {
-  if (routes) {
-    return routes.map((route, index) => {
-      return generatorRoute(route, index, extraProps);
-    });
-  }
-  return null;
-}
-
-function renderRoutesDeep(routes: IRouterConfig[], extraProps?: IExtraProps): React.ReactElement[] {
+function renderRoutes(routes: IRouterConfig[], extraProps?: IExtraProps): React.ReactElement[] {
   const routers: React.ReactElement[] = [];
 
   function travel(routerList: IRouterConfig[]): void {
@@ -125,4 +117,24 @@ function getRedirectsRoutes(routes: IRouterConfig[]): React.ReactElement[] {
   return redirects;
 }
 
-export { renderRoutes, renderRoutesDeep, getRedirectsRoutes };
+function getFlattenedRoutes(list: IRouterConfig[]) {
+  const res: IRouterConfig[] = [];
+
+  function travel(arr: IRouterConfig[]) {
+    for (let i = 0; i < arr.length; i++) {
+      const route = arr[i];
+      const { children } = arr[i];
+
+      res.push(route);
+
+      if (children) {
+        travel(children);
+      }
+    }
+  }
+  travel(list);
+
+  return res;
+}
+
+export { renderRoutes, getRedirectsRoutes, getFlattenedRoutes };

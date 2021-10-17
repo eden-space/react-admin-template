@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import { statusCodeMap } from './constants';
 import notificationError from './notification';
+import loading from './loading';
 
 export interface IAxiosResponse extends AxiosResponse<any> {
   data: {
@@ -57,8 +58,8 @@ export function errorHandler(error: AxiosError) {
   const serverSideMessage = (data as unknown as any)?.message as string;
   const statusCodeMessage = statusCodeMap.get(status);
   const msg = serverSideMessage || statusCodeMessage || statusText || message || '未知错误';
-  if ((config as IAxiosRequestConfig)?.background) {
-    console.log('@todo 隐藏菊花图动作');
+  if (!(config as IAxiosRequestConfig)?.background) {
+    loading.close();
   }
   notificationError(status, msg, config.url);
   if (status) {

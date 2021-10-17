@@ -8,7 +8,7 @@ function render(): void {
     const App = res.default;
     ReactDom.render(
       <App />,
-      document.getElementById('react-admin-template'),
+      document.querySelector('#s-app-root'),
     );
   }).catch(console.error);
 }

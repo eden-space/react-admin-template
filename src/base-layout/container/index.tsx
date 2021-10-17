@@ -4,15 +4,16 @@
 import React, { useRef, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router';
 import { flattenedRoutes } from '@/router';
+import config from '@/config';
 
 interface IProps {
   children: React.ReactElement;
 }
 
 const BaseContainer: React.FC<IProps> = (props) => {
-  const { current: originTitle } = useRef(document.title);
   const history = useHistory();
   const location = useLocation();
+  const { current: originTitle } = useRef(document.title);
 
   useEffect(() => {
     setTitle(location.pathname);
@@ -29,7 +30,7 @@ const BaseContainer: React.FC<IProps> = (props) => {
 
   function setTitle(pathname: string) {
     const match = flattenedRoutes.find((route) => route.path === pathname);
-    document.title = match?.meta?.title || originTitle;
+    document.title = match?.meta?.title ? `${config.systemName} - ${match.meta.title}` : originTitle;
   }
 
   return props.children;
