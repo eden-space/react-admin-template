@@ -171,10 +171,6 @@
     "webpack-merge": "^5.7.3",
     "webpackbar": "^5.0.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/malakirti/react-admin-template.git"
-  },
   "tags": [
     "react",
     "electron",
