@@ -4,17 +4,13 @@
  */
 const path = require('path');
 const builder = require('electron-builder');
+const { pascalCase } =  require('change-case');
+const { name: pkgName, version, author: { name: authorName, email: authorEmail } } = require(path.resolve(__dirname, './package.json'));
 const ICON_ICO = path.resolve(__dirname, './public/main/icon/icon.ico');
 const ICON_ICNS = path.resolve(__dirname, './public/main/icon/icon.icns');
 const paths = require('./.scripts/config/paths');
-const {
-  // npm_package_name: productName,
-  npm_package_version: version,
-  npm_package_author_name: authorName,
-  npm_package_author_email: authorEmail,
-} = process.env;
 
-const productName = 'Lottie Player';
+const productName = pascalCase(pkgName);
 
 /**
  * For electron-builder
@@ -27,16 +23,16 @@ const cliOptions = {
   config: {
     productName,
     buildVersion: version,
-    appId: 'com.react.electron.admin.template',
-    asar: false, // @todo 注意: 为便于调试默认设为了false，生产环境建议为true
+    appId: 'com.lottie.player',
+    asar: true, // @todo 注意: 为便于调试默认设为了false，生产环境建议为true
     /** Inject properties to `package.json` **/
     // extraMetadata: {
     // 	'[key: string]': 'string',
     // },
-    copyright: `Copyright © ${new Date().getFullYear()} ${authorName}<${authorEmail}>`,
+    copyright: `Copyright © ${new Date().getFullYear()} ${productName}\n${authorName}<${authorEmail}>\nAll rights reserved`,
     /** 网速有问题使用镜像 **/
     electronDownload: {
-    	mirror: 'https://npm.taobao.org/mirrors/electron/',
+      mirror: 'https://npm.taobao.org/mirrors/electron/',
     },
 
     /**
@@ -47,13 +43,13 @@ const cliOptions = {
     files: ['dist', 'package.json', '!**/node_modules/**/*'],
     directories: {
       buildResources: 'dist/main/public/assets',
-      output: path.join(paths.appElectronReleasePath, `${productName}-release-${version}`),
+      output: path.join(paths.appElectronReleasePath, `${pkgName}-release-${version}`),
     },
     nsis: {
       oneClick: false,
       deleteAppDataOnUninstall: true,
       allowToChangeInstallationDirectory: true,
-      artifactName: '${productName}_setup_${version}.${ext}',
+      artifactName: '${pkgName}_setup_${version}.${ext}',
     },
     win: {
       icon: ICON_ICO,
@@ -73,13 +69,14 @@ const cliOptions = {
     },
     dmg: {
       icon: ICON_ICNS,
+      background: path.resolve(process.cwd(), 'public/main/icon/bg.png'),
       contents: [
-        { x: 130, y: 220, type: 'file' },
-        { x: 410, y: 220, type: 'link', path: '/Applications' },
+        { x: 160, y: 160, type: 'file' },
+        { x: 440, y: 160, type: 'link', path: '/Applications' },
       ],
       window: {
-        width: 500,
-        height: 500
+        width: 600,
+        height: 360,
       },
     },
   },
