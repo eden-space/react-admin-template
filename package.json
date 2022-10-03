@@ -1,9 +1,9 @@
 {
-  "name": "react-admin-template",
+  "name": "lottie-player",
   "version": "0.0.1",
   "main": "dist/main/index.js",
   "private": false,
-  "description": "React Admin Template",
+  "description": "lottie player",
   "author": {
     "name": "vimalakirti",
     "email": "vimalakirti409@gmail.com"
@@ -178,20 +178,14 @@
   "tags": [
     "react",
     "electron",
-    "antd",
-    "admin",
-    "template"
+    "lottie",
+    "player"
   ],
   "keywords": [
     "react",
     "electron",
-    "antd",
-    "ant design",
-    "element",
-    "admin",
-    "template",
-    "react-template",
-    "react-admin-template"
+    "lottie",
+    "player"
   ],
   "engines": {
     "node": ">=14.15.0"

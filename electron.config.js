@@ -4,17 +4,13 @@
  */
 const path = require('path');
 const builder = require('electron-builder');
+const { pascalCase } =  require('change-case');
+const { name: pkgName, version, author: { name: authorName, email: authorEmail } } = require(path.resolve(__dirname, './package.json'));
 const ICON_ICO = path.resolve(__dirname, './public/main/icon/icon.ico');
 const ICON_ICNS = path.resolve(__dirname, './public/main/icon/icon.icns');
 const paths = require('./.scripts/config/paths');
-const {
-  // npm_package_name: productName,
-  npm_package_version: version,
-  npm_package_author_name: authorName,
-  npm_package_author_email: authorEmail,
-} = process.env;
 
-const productName = 'Lottie Player';
+const productName = pascalCase(pkgName);
 
 /**
  * For electron-builder
@@ -33,7 +29,7 @@ const cliOptions = {
     // extraMetadata: {
     // 	'[key: string]': 'string',
     // },
-    copyright: `Copyright © ${new Date().getFullYear()} Lottie Player. ${authorName} All rights reserved`,
+    copyright: `Copyright © ${new Date().getFullYear()} ${productName}\n${authorName}<${authorEmail}>\nAll rights reserved`,
     /** 网速有问题使用镜像 **/
     electronDownload: {
     	mirror: 'https://npm.taobao.org/mirrors/electron/',
@@ -47,13 +43,13 @@ const cliOptions = {
     files: ['dist', 'package.json', '!**/node_modules/**/*'],
     directories: {
       buildResources: 'dist/main/public/assets',
-      output: path.join(paths.appElectronReleasePath, `${productName}-release-${version}`),
+      output: path.join(paths.appElectronReleasePath, `${pkgName}-release-${version}`),
     },
     nsis: {
       oneClick: false,
       deleteAppDataOnUninstall: true,
       allowToChangeInstallationDirectory: true,
-      artifactName: '${productName}_setup_${version}.${ext}',
+      artifactName: '${pkgName}_setup_${version}.${ext}',
     },
     win: {
       icon: ICON_ICO,
